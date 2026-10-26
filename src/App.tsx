@@ -3,9 +3,21 @@ import { QRCodeSVG } from 'qrcode.react'
 import { pickTribe, questions, tribes, type Tribe, type TribeId } from './data'
 import { playTribeTone } from './sound'
 
-type Screen = 'home' | 'quiz' | 'beacon' | 'pact' | 'host'
+type Screen = 'home' | 'intro' | 'quiz' | 'beacon' | 'pact' | 'host'
+
+type Intro = {
+  name: string
+  look: string
+  help: string
+  need: string
+}
+
+const LIVE_URL =
+  'https://kravchuk-ivan.github.io/2026-10-26-grok-ai-hackathon-grok-ai-meetup-cursor/'
 
 function appUrl() {
+  const host = window.location.hostname
+  if (host === 'localhost' || host === '127.0.0.1') return LIVE_URL
   return new URL('.', window.location.href).href
 }
 
@@ -49,6 +61,19 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>(hostMode ? 'host' : 'home')
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<TribeId[]>([])
+  const [intro, setIntro] = useState<Intro>(() => {
+    try {
+      const saved = sessionStorage.getItem('raise-intro')
+      if (saved) return JSON.parse(saved) as Intro
+    } catch {
+      /* ignore */
+    }
+    return { name: '', look: '', help: '', need: '' }
+  })
+
+  useEffect(() => {
+    sessionStorage.setItem('raise-intro', JSON.stringify(intro))
+  }, [intro])
 
   const tribe = useMemo(() => {
     if (answers.length < questions.length) return null
@@ -72,10 +97,21 @@ export default function App() {
   const restart = () => {
     setAnswers([])
     setStep(0)
+    setIntro({ name: '', look: '', help: '', need: '' })
     setScreen('home')
   }
 
   if (screen === 'host') return <Host />
+  if (screen === 'intro') {
+    return (
+      <IntroForm
+        value={intro}
+        onChange={setIntro}
+        onNext={() => setScreen('quiz')}
+        onBack={() => setScreen('home')}
+      />
+    )
+  }
   if (screen === 'quiz') {
     return (
       <Quiz
@@ -87,7 +123,7 @@ export default function App() {
           else setStep(step + 1)
         }}
         onBack={() => {
-          if (step === 0) setScreen('home')
+          if (step === 0) setScreen('intro')
           else setStep(step - 1)
         }}
       />
@@ -97,15 +133,24 @@ export default function App() {
     return (
       <Beacon
         tribe={tribe}
+        name={intro.name}
+        look={intro.look}
         onFound={() => setScreen('pact')}
         onRetake={restart}
       />
     )
   }
   if (screen === 'pact' && tribe) {
-    return <Pact tribe={tribe} onBeacon={() => setScreen('beacon')} onRetake={restart} />
+    return (
+      <Pact
+        tribe={tribe}
+        intro={intro}
+        onBeacon={() => setScreen('beacon')}
+        onRetake={restart}
+      />
+    )
   }
-  return <Home onStart={() => setScreen('quiz')} onHost={() => setScreen('host')} />
+  return <Home onStart={() => setScreen('intro')} onHost={() => setScreen('host')} />
 }
 
 function ColorRail() {
@@ -134,10 +179,10 @@ function Home({ onStart, onHost }: { onStart: () => void; onHost: () => void }) 
         worth continuing, and that helps mental health.
       </p>
       <ol className="steps">
-        <li>Answer 5 questions.</li>
-        <li>Get a color.</li>
+        <li>Say your first name and how people can find you in the room. No login.</li>
+        <li>Answer 5 questions. Get a color.</li>
         <li>Hold up your phone. Stand with people who have the same color.</li>
-        <li>Agree to meet once in the next 7 days.</li>
+        <li>Trade what you can help with. Agree to meet once this week.</li>
       </ol>
       <button className="primary" onClick={onStart}>
         Find your color
@@ -145,6 +190,79 @@ function Home({ onStart, onHost }: { onStart: () => void; onHost: () => void }) 
       <button className="ghost" onClick={onHost}>
         Host screen / QR
       </button>
+    </main>
+  )
+}
+
+function IntroForm({
+  value,
+  onChange,
+  onNext,
+  onBack,
+}: {
+  value: Intro
+  onChange: (next: Intro) => void
+  onNext: () => void
+  onBack: () => void
+}) {
+  const set = (key: keyof Intro) => (event: { target: { value: string } }) =>
+    onChange({ ...value, [key]: event.target.value })
+
+  return (
+    <main className="page quiz">
+      <div className="quiz-top">
+        <button className="back" onClick={onBack}>
+          Back
+        </button>
+        <span>Before the questions</span>
+      </div>
+      <h2>First, how should people find you?</h2>
+      <p className="lede">Stays on this phone. No account.</p>
+      <form
+        className="intro-form"
+        onSubmit={(event) => {
+          event.preventDefault()
+          if (value.name.trim()) onNext()
+        }}
+      >
+      <label className="field">
+        First name
+        <input
+          autoComplete="given-name"
+          autoFocus
+          placeholder="First name is enough"
+          value={value.name}
+          onChange={set('name')}
+        />
+      </label>
+      <label className="field">
+        How can people find you in this room?
+        <input
+          placeholder="Black hoodie, near the window, table 4"
+          value={value.look}
+          onChange={set('look')}
+        />
+      </label>
+      <label className="field">
+        What can you help someone with?
+        <input
+          placeholder="Python, a run plan, cooking, listening"
+          value={value.help}
+          onChange={set('help')}
+        />
+      </label>
+      <label className="field">
+        What do you need help with?
+        <input
+          placeholder="A training partner, a meal, someone to show work to"
+          value={value.need}
+          onChange={set('need')}
+        />
+      </label>
+      <button className="primary" type="submit" disabled={!value.name.trim()}>
+        Continue
+      </button>
+      </form>
     </main>
   )
 }
@@ -189,10 +307,14 @@ function Quiz({
 
 function Beacon({
   tribe,
+  name,
+  look,
   onFound,
   onRetake,
 }: {
   tribe: Tribe
+  name: string
+  look: string
   onFound: () => void
   onRetake: () => void
 }) {
@@ -201,6 +323,8 @@ function Beacon({
       <div className="beacon-glow" />
       <p className="beacon-kicker">Hold up your phone. Find this color in the room.</p>
       <h1 className="beacon-name">{tribe.name}</h1>
+      <p className="beacon-person">{name}</p>
+      {look ? <p className="beacon-look">{look}</p> : null}
       <p className="beacon-call">{tribe.call}</p>
       <p className="beacon-meaning">{tribe.meaning}</p>
       <div className="beacon-actions">
@@ -217,25 +341,36 @@ function Beacon({
 
 function Pact({
   tribe,
+  intro,
   onBeacon,
   onRetake,
 }: {
   tribe: Tribe
+  intro: Intro
   onBeacon: () => void
   onRetake: () => void
 }) {
   return (
     <main className="page pact">
       <p className="eyebrow" style={{ color: tribe.color }}>
-        {tribe.name} group
+        {tribe.name} group · {intro.name}
       </p>
       <h1>Use the color to find each other. Then agree to meet again this week.</h1>
       <p className="lede">{tribe.why}</p>
 
       <section className="card">
+        <h3>Read this out</h3>
+        <p>
+          I am {intro.name}
+          {intro.look ? `, ${intro.look}` : ''}.
+        </p>
+        {intro.help ? <p>I can help with {intro.help}.</p> : null}
+        {intro.need ? <p>I need help with {intro.need}.</p> : null}
+      </section>
+
+      <section className="card">
         <h3>Tonight</h3>
         <ol>
-          <li>Say your first name and one honest thing about your week.</li>
           <li>
             Ask this: <strong>{tribe.question}</strong>
           </li>
@@ -281,7 +416,7 @@ function Host() {
       <div className="host-card">
         <p className="eyebrow">Scan this on your phone</p>
         <h1>RAISE</h1>
-        <p>Five questions. One color. Hold up your phone. Stand with the same color.</p>
+        <p>No login. First name, a color, then hold up your phone.</p>
         <div className="qr-wrap">
           <QRCodeSVG value={url} size={200} bgColor="#f4efe6" fgColor="#0b0b0c" />
         </div>
