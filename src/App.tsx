@@ -169,14 +169,12 @@ function Home({ onStart, onHost }: { onStart: () => void; onHost: () => void }) 
       <ColorRail />
       <p className="eyebrow">Grok Hackathon · 400 people</p>
       <h1>
-        Working from home
-        <em> gets lonely.</em>
+        Find your people.
+        <em> Talk to them.</em>
       </h1>
       <p className="lede">
-        Loneliness is common, and it is not limited to one background. People are
-        different. A run, a walk, a meal, or a half-finished project does not need
-        a bigger purpose on its own. Doing it with other people is what makes it
-        worth continuing, and that helps mental health.
+        You are a human in a room of humans. This is a way to find people you
+        can actually talk to, and start something together.
       </p>
       <ol className="steps">
         <li>Say your first name and how people can find you in the room. No login.</li>
