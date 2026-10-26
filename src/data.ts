@@ -48,7 +48,7 @@ export const tribes: Record<TribeId, Tribe> = {
     hang: 'A shared meal this week. Nobody hosts alone.',
     question: 'What do you cook when someone else is coming that you would not cook for yourself?',
     pact: 'Eat together once in the next 7 days. Everyone brings one thing. Put phones in a pile.',
-    why: 'Eating alone is common when you work from home. Eating with other people is better for you.',
+    why: 'Eating alone is easy when you live on a phone. Eating with other people is better for you.',
   },
   gold: {
     id: 'gold',
@@ -89,8 +89,8 @@ export type Question = {
 
 export const questions: Question[] = [
   {
-    id: 'after-wfh',
-    prompt: 'After a long work-from-home day, you feel better if you:',
+    id: 'after-screens',
+    prompt: 'After a long day on screens, you feel better if you:',
     choices: [
       { label: 'Exercise', tribe: 'ember' },
       { label: 'Walk with no destination', tribe: 'violet' },
