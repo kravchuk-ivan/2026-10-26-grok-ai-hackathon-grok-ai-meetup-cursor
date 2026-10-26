@@ -10,7 +10,7 @@ export type Tribe = {
   hang: string
   question: string
   pact: string
-  nonsense: string
+  why: string
 }
 
 export const tribes: Record<TribeId, Tribe> = {
@@ -20,12 +20,11 @@ export const tribes: Record<TribeId, Tribe> = {
     color: '#FF4D1C',
     ink: '#1A0A04',
     call: 'Raise Ember',
-    meaning: 'The ones who train. A run, a gym, a body that refuses to disappear into a laptop.',
-    hang: 'A 5km loop this week. No Strava required. Show up sweaty.',
-    question: 'What are you training for that would sound silly if you said it out loud?',
-    pact: 'Meet once in 7 days. Move together. Text the group the night before so nobody flakes alone.',
-    nonsense:
-      'Training for hire, racing nobody, doing another set — it barely makes sense until someone else is doing it with you.',
+    meaning: 'People who train: runs, the gym, anything that gets them off a chair.',
+    hang: 'A 5km run this week. Show up. You do not need a tracking app.',
+    question: 'What are you training for?',
+    pact: 'Meet once in the next 7 days and exercise together. Text the group the night before.',
+    why: 'Training alone is easy to skip. Training with other people is easier to keep doing.',
   },
   violet: {
     id: 'violet',
@@ -33,12 +32,11 @@ export const tribes: Record<TribeId, Tribe> = {
     color: '#B14CFF',
     ink: '#14081F',
     call: 'Raise Violet',
-    meaning: 'The ones who wander. Night walks, accidental conversations, the city as a living room.',
-    hang: 'A no-destination walk. Start at a subway and get lost for 40 minutes.',
-    question: 'Where in this city do you feel most like yourself, and where do you still feel like a guest?',
-    pact: 'Walk once in 7 days. Phones down except to find each other. End with one true story from "before."',
-    nonsense:
-      'Walking in circles has no KPI. Do it with a crew and it becomes how you remember you have a life here.',
+    meaning: 'People who walk and talk. They meet without a plan.',
+    hang: 'A 40-minute walk with no destination.',
+    question: 'Where do you feel like yourself, and where do you feel alone?',
+    pact: 'Walk together once in the next 7 days. Keep phones away except to meet. Each person says one honest thing about the week.',
+    why: 'A walk with no destination looks pointless. Walking with other people gives it a reason.',
   },
   teal: {
     id: 'teal',
@@ -46,12 +44,11 @@ export const tribes: Record<TribeId, Tribe> = {
     color: '#00D4A8',
     ink: '#04211A',
     call: 'Raise Teal',
-    meaning: 'The ones who set the table. Food is the oldest immigration technology.',
-    hang: 'A potluck in someone\'s kitchen, or dumplings after this. Nobody hosts alone.',
-    question: 'What meal from home have you not cooked here yet because it felt too sad to eat by yourself?',
-    pact: 'Eat together once in 7 days. Everyone brings one thing. Phones in a pile in the middle.',
-    nonsense:
-      'Cooking for one is logistics. Cooking for a table is how a city starts to feel like it belongs to you.',
+    meaning: 'People who cook and eat with others.',
+    hang: 'A shared meal this week. Nobody hosts alone.',
+    question: 'What do you cook when someone else is coming that you would not cook for yourself?',
+    pact: 'Eat together once in the next 7 days. Everyone brings one thing. Put phones in a pile.',
+    why: 'Eating alone is common when you work from home. Eating with other people is better for you.',
   },
   gold: {
     id: 'gold',
@@ -59,12 +56,11 @@ export const tribes: Record<TribeId, Tribe> = {
     color: '#FFC53D',
     ink: '#231A04',
     call: 'Raise Gold',
-    meaning: 'The ones who make. Shipping into the void is how builders get lonely.',
-    hang: 'A 90-minute build night. Laptops, sketches, ugly prototypes. Show the work.',
-    question: 'What are you building that nobody in your old life would understand?',
-    pact: 'Make something in the same room once in 7 days. Demo at the end, even if it barely works.',
-    nonsense:
-      'A side project with no audience is a hobby. A side project with four witnesses becomes a reason to stay up.',
+    meaning: 'People who make things and want someone to see the work.',
+    hang: 'A 90-minute work session. Bring a laptop or a sketch. Show what you made.',
+    question: 'What are you building that you have not told anyone about?',
+    pact: 'Work in the same room once in the next 7 days. Show the work at the end, even if it is unfinished.',
+    why: 'A project nobody sees is easy to drop. A project other people see is easier to finish.',
   },
   sky: {
     id: 'sky',
@@ -72,12 +68,11 @@ export const tribes: Record<TribeId, Tribe> = {
     color: '#3D9EFF',
     ink: '#04101F',
     call: 'Raise Sky',
-    meaning: 'The ones who bridge. Newcomers, translators, people who remember month one.',
-    hang: 'A "how I survived Toronto" hour. Transit hacks, doctors, visas, winter, the unwritten rules.',
-    question: 'What did you wish a stranger had told you in your first 30 days here?',
-    pact: 'Meet once in 7 days. Each person brings one practical gift for someone newer than them.',
-    nonsense:
-      'Helping a stranger with a TTC pass is nothing. Doing it on purpose is how a city grows a nervous system.',
+    meaning: 'People who ask how you are and wait for the answer.',
+    hang: 'One hour of talking. Work talk is optional.',
+    question: 'When did someone last ask how you were, and you told the truth?',
+    pact: 'Meet once in the next 7 days. Each person checks on one other person before the week ends.',
+    why: 'A short "you good?" in chat does not help much. Asking in person, and listening, does.',
   },
 }
 
@@ -95,57 +90,57 @@ export type Question = {
 export const questions: Question[] = [
   {
     id: 'after-wfh',
-    prompt: 'After a long work-from-home day, you actually feel better if you:',
+    prompt: 'After a long work-from-home day, you feel better if you:',
     choices: [
-      { label: 'Move until your brain shuts up', tribe: 'ember' },
-      { label: 'Walk the city with no destination', tribe: 'violet' },
-      { label: 'Cook, host, or sit at a table', tribe: 'teal' },
-      { label: 'Make something with your hands or a laptop', tribe: 'gold' },
-      { label: 'Check on someone else who is new here too', tribe: 'sky' },
+      { label: 'Exercise', tribe: 'ember' },
+      { label: 'Walk with no destination', tribe: 'violet' },
+      { label: 'Cook or eat with someone', tribe: 'teal' },
+      { label: 'Make something', tribe: 'gold' },
+      { label: 'Check on someone who might also be lonely', tribe: 'sky' },
     ],
   },
   {
     id: 'slope',
-    prompt: 'The slippery slope of remote work, for you, is:',
+    prompt: 'The main problem with remote work, for you, is:',
     choices: [
-      { label: 'Your body disappearing into the chair', tribe: 'ember' },
-      { label: 'Never accidentally meeting anyone', tribe: 'violet' },
-      { label: 'Eating alone again', tribe: 'teal' },
-      { label: 'Building in a vacuum, nobody to show', tribe: 'gold' },
-      { label: 'Forgetting you are allowed to need people', tribe: 'sky' },
+      { label: 'Sitting all day and not moving', tribe: 'ember' },
+      { label: 'Never meeting anyone by accident', tribe: 'violet' },
+      { label: 'Eating alone', tribe: 'teal' },
+      { label: 'Making things with nobody to show', tribe: 'gold' },
+      { label: 'Forgetting that you need other people', tribe: 'sky' },
     ],
   },
   {
     id: 'meaning',
-    prompt: 'An activity that "doesn\'t make sense" gets meaning when a community gives you:',
+    prompt: 'A hobby gets meaning when a group gives you:',
     choices: [
       { label: 'A reason to train harder', tribe: 'ember' },
-      { label: 'A crew for the pointless beautiful walk', tribe: 'violet' },
-      { label: 'A table you are expected at', tribe: 'teal' },
-      { label: 'People who care that you shipped', tribe: 'gold' },
-      { label: 'Proof you are not the only one starting over', tribe: 'sky' },
+      { label: 'People to walk with', tribe: 'violet' },
+      { label: 'A meal you are expected to attend', tribe: 'teal' },
+      { label: 'People who care that you finished something', tribe: 'gold' },
+      { label: 'Proof you are not the only one having a hard time', tribe: 'sky' },
     ],
   },
   {
     id: 'hang',
-    prompt: 'If 12 strangers in this room became your people, the first hang would be:',
+    prompt: 'If 12 people in this room became a group, you would start with:',
     choices: [
-      { label: 'A run, a gym, a sweaty thing', tribe: 'ember' },
-      { label: 'Night walk + bad coffee', tribe: 'violet' },
-      { label: 'Potluck, dumplings, someone\'s kitchen', tribe: 'teal' },
-      { label: 'A tiny build night', tribe: 'gold' },
-      { label: '"Here is how I survived month one"', tribe: 'sky' },
+      { label: 'A run or a gym session', tribe: 'ember' },
+      { label: 'A night walk and coffee', tribe: 'violet' },
+      { label: 'A shared meal', tribe: 'teal' },
+      { label: 'A short work session', tribe: 'gold' },
+      { label: 'A conversation that is not networking', tribe: 'sky' },
     ],
   },
   {
     id: 'miss',
-    prompt: 'What do you miss most from before you moved?',
+    prompt: 'When you have been alone too long, what do you miss first?',
     choices: [
-      { label: 'A training partner who just appeared', tribe: 'ember' },
-      { label: 'Friends who showed up with no plan', tribe: 'violet' },
-      { label: 'Sunday lunch energy', tribe: 'teal' },
-      { label: 'A garage / studio / crew of makers', tribe: 'gold' },
-      { label: 'Being understood without explaining your story', tribe: 'sky' },
+      { label: 'Someone to train with', tribe: 'ember' },
+      { label: 'Friends who come over without a plan', tribe: 'violet' },
+      { label: 'Regular meals with other people', tribe: 'teal' },
+      { label: 'Other people making things nearby', tribe: 'gold' },
+      { label: 'Someone who asks how you are', tribe: 'sky' },
     ],
   },
 ]

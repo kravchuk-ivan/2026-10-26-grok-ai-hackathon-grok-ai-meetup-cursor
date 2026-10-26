@@ -1,8 +1,6 @@
 # RAISE
 
-Hackathon app for a room of ~400: answer five questions, get a color, raise your phone, find your people, then lock a 7-day pact so the huddle does not evaporate.
-
-The color is how you find each other. **The pact is why you stay.**
+Hackathon app for a room of about 400 people: answer five questions, get a color, hold up your phone, stand with people who have the same color, then agree to meet once in the next 7 days.
 
 ## Run locally
 

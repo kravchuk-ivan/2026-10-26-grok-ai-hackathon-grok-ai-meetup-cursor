@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { pickTribe, questions, tribes, type Tribe, type TribeId } from './data'
+import { playTribeTone } from './sound'
 
 type Screen = 'home' | 'quiz' | 'beacon' | 'pact' | 'host'
+
+function appUrl() {
+  return new URL('.', window.location.href).href
+}
 
 function useWakeLock(active: boolean) {
   useEffect(() => {
@@ -38,7 +43,9 @@ function setThemeColor(color: string) {
 }
 
 export default function App() {
-  const hostMode = window.location.pathname.replace(/\/$/, '') === '/host'
+  const hostMode =
+    window.location.pathname.replace(/\/$/, '').endsWith('/host') ||
+    window.location.hash === '#host'
   const [screen, setScreen] = useState<Screen>(hostMode ? 'host' : 'home')
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<TribeId[]>([])
@@ -54,8 +61,11 @@ export default function App() {
     if (screen === 'beacon' && tribe) {
       setThemeColor(tribe.color)
       navigator.vibrate?.([30, 40, 30, 40, 80])
+      playTribeTone(tribe.id)
+      void document.documentElement.requestFullscreen?.().catch(() => undefined)
     } else {
       setThemeColor('#0b0b0c')
+      if (document.fullscreenElement) void document.exitFullscreen?.().catch(() => undefined)
     }
   }, [screen, tribe])
 
@@ -98,24 +108,36 @@ export default function App() {
   return <Home onStart={() => setScreen('quiz')} onHost={() => setScreen('host')} />
 }
 
+function ColorRail() {
+  return (
+    <div className="rail" aria-hidden="true">
+      {Object.values(tribes).map((tribe) => (
+        <span key={tribe.id} style={{ background: tribe.color }} />
+      ))}
+    </div>
+  )
+}
+
 function Home({ onStart, onHost }: { onStart: () => void; onHost: () => void }) {
   return (
     <main className="page home">
-      <p className="eyebrow">Toronto · Grok Hackathon · 400 people</p>
+      <ColorRail />
+      <p className="eyebrow">Grok Hackathon · 400 people</p>
       <h1>
         Working from home
         <em> gets lonely.</em>
       </h1>
       <p className="lede">
-        Every human here is unique. Most of us are immigrants. The activity itself
-        does not have to mean anything — a run, a walk, a potluck, a half-built app.
-        Community is what makes it matter.
+        Loneliness is common, and it is not limited to one background. People are
+        different. A run, a walk, a meal, or a half-finished project does not need
+        a bigger purpose on its own. Doing it with other people is what makes it
+        worth continuing, and that helps mental health.
       </p>
       <ol className="steps">
         <li>Answer 5 questions.</li>
         <li>Get a color.</li>
-        <li>Raise your phone. Find your people.</li>
-        <li>Lock a 7-day pact so tonight does not evaporate.</li>
+        <li>Hold up your phone. Stand with people who have the same color.</li>
+        <li>Agree to meet once in the next 7 days.</li>
       </ol>
       <button className="primary" onClick={onStart}>
         Find your color
@@ -176,7 +198,8 @@ function Beacon({
 }) {
   return (
     <main className="beacon" style={{ background: tribe.color, color: tribe.ink }}>
-      <p className="beacon-kicker">Look up. Find this color.</p>
+      <div className="beacon-glow" />
+      <p className="beacon-kicker">Hold up your phone. Find this color in the room.</p>
       <h1 className="beacon-name">{tribe.name}</h1>
       <p className="beacon-call">{tribe.call}</p>
       <p className="beacon-meaning">{tribe.meaning}</p>
@@ -204,23 +227,28 @@ function Pact({
   return (
     <main className="page pact">
       <p className="eyebrow" style={{ color: tribe.color }}>
-        {tribe.name} circle
+        {tribe.name} group
       </p>
-      <h1>The color is how you find each other. The pact is why you stay.</h1>
-      <p className="lede">{tribe.nonsense}</p>
+      <h1>Use the color to find each other. Then agree to meet again this week.</h1>
+      <p className="lede">{tribe.why}</p>
 
       <section className="card">
-        <h3>Tonight, in this huddle</h3>
+        <h3>Tonight</h3>
         <ol>
-          <li>First names, neighborhood, how long you have been here.</li>
-          <li>Ask this: <strong>{tribe.question}</strong></li>
-          <li>Pick one hang in the next 7 days: {tribe.hang}</li>
-          <li>Invite one person who is <em>not</em> your color next time. Cliques are how cities stay lonely.</li>
+          <li>Say your first name and one honest thing about your week.</li>
+          <li>
+            Ask this: <strong>{tribe.question}</strong>
+          </li>
+          <li>Pick a time to meet in the next 7 days: {tribe.hang}</li>
+          <li>
+            Next time, invite one person who is <em>not</em> this color. If you only
+            talk to your group, everyone else stays left out.
+          </li>
         </ol>
       </section>
 
       <section className="card">
-        <h3>7-day pact</h3>
+        <h3>7-day plan</h3>
         <p>{tribe.pact}</p>
       </section>
 
@@ -237,32 +265,27 @@ function Pact({
 }
 
 function Host() {
-  const url = `${window.location.origin}/`
+  const url = appUrl()
   const tribeList = Object.values(tribes)
 
   return (
-    <main className="page host">
-      <div className="host-grid">
-        <div>
-          <p className="eyebrow">Scan to join</p>
-          <h1>RAISE</h1>
-          <p className="lede">
-            Five questions. One color. Raise your phone. The people with your color
-            are your first community in this room.
-          </p>
-          <div className="qr-wrap">
-            <QRCodeSVG value={url} size={220} bgColor="#f4efe6" fgColor="#0b0b0c" />
+    <main className="host-wall">
+      <div className="host-stripes">
+        {tribeList.map((tribe) => (
+          <div key={tribe.id} className="stripe" style={{ background: tribe.color, color: tribe.ink }}>
+            <strong>{tribe.name}</strong>
+            <span>{tribe.meaning}</span>
           </div>
-          <p className="url">{url}</p>
+        ))}
+      </div>
+      <div className="host-card">
+        <p className="eyebrow">Scan this on your phone</p>
+        <h1>RAISE</h1>
+        <p>Five questions. One color. Hold up your phone. Stand with the same color.</p>
+        <div className="qr-wrap">
+          <QRCodeSVG value={url} size={200} bgColor="#f4efe6" fgColor="#0b0b0c" />
         </div>
-        <ul className="legend">
-          {tribeList.map((tribe) => (
-            <li key={tribe.id} style={{ background: tribe.color, color: tribe.ink }}>
-              <strong>{tribe.name}</strong>
-              <span>{tribe.meaning}</span>
-            </li>
-          ))}
-        </ul>
+        <p className="url">{url}</p>
       </div>
     </main>
   )
