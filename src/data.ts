@@ -101,13 +101,13 @@ export const questions: Question[] = [
   },
   {
     id: 'slope',
-    prompt: 'The main problem with remote work, for you, is:',
+    prompt: 'Phones and screens make it easy to get lonely. For you, that looks like:',
     choices: [
       { label: 'Sitting all day and not moving', tribe: 'ember' },
-      { label: 'Never meeting anyone by accident', tribe: 'violet' },
-      { label: 'Eating alone', tribe: 'teal' },
+      { label: 'Never meeting anyone in person', tribe: 'violet' },
+      { label: 'Eating with a screen instead of a person', tribe: 'teal' },
       { label: 'Making things with nobody to show', tribe: 'gold' },
-      { label: 'Forgetting that you need other people', tribe: 'sky' },
+      { label: 'Chatting a lot and still feeling alone', tribe: 'sky' },
     ],
   },
   {
